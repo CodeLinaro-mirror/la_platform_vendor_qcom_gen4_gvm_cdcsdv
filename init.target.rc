@@ -1,0 +1,80 @@
+# Copyright (c) 2023-2024 Qualcomm Innovation Center, Inc. All rights reserved.
+# SPDX-License-Identifier: BSD-3-Clause-Clear
+
+
+import /system/etc/init/init.sdv_core_base.rc
+
+on property:dev.bootcomplete=1
+    exec u:r:vendor_modprobe:s0 -- vendor/bin/modprobe -a -d /vendor_dlkm/lib/modules/ virtio_net
+    exec u:r:vendor_modprobe:s0 -- vendor/bin/modprobe -a -d /vendor_dlkm/lib/modules/ stub_dlkm
+    exec u:r:vendor_modprobe:s0 -- vendor/bin/modprobe -a -d /vendor_dlkm/lib/modules/ machine_dlkm
+    exec - root root -- /system/bin/ifconfig eth0 192.168.1.2 netmask 255.255.255.0
+    exec - root root -- /system/bin/ip route add default via 192.168.1.2 dev eth0
+    exec - root root -- /system/bin/ifconfig eth0 up
+    exec - root root -- /system/bin/ip rule add from all lookup main
+    exec_start create-vlan
+    setprop service.adb.tcp.port 5555
+    setprop service.adb.listen_addrs tcp:5555
+    start adbd
+    mkdir /dev/socket/agm 0777 system system
+
+on post-fs-data
+    # load kernel modules
+    write /dev/kmsg "gki.modprobe"
+    exec_start gki.modprobe
+    write /dev/kmsg "vendor.modprobe"
+    #exec_start vendor.modprobe
+
+service gki.modprobe /vendor/bin/system_dlkm_modprobe.sh
+    class main
+    user root
+    group root system
+    disabled
+    stdio_to_kmsg
+    seclabel u:r:vendor_modprobe:s0
+    oneshot
+
+service vendor.modprobe /vendor/bin/vendor_modprobe.sh
+    class main
+    user root
+    group root system
+    oneshot
+    disabled
+    stdio_to_kmsg
+    seclabel u:r:vendor_modprobe:s0
+    import service_dlkm
+    on service_dlkm_started
+
+service vendor.agm-1-0 /vendor/bin/hw/vendor.qti.hardware.AGMIPC@1.0-service
+    class hal
+    user system
+    interface vendor.qti.hardware.AGMIPC@1.0::IAGM default
+    # media gid needed for /dev/fm (radio) and for /data/misc/media (tee)
+    group system audio media mediadrm oem_2901 wakelock
+    capabilities BLOCK_SUSPEND SYS_NICE
+    disabled
+
+service create-vlan /vendor/bin/create_vlan_vm_1.sh
+    class main
+    user root
+    group root system shell inet net_admin
+    capabilities NET_ADMIN
+    stdio_to_kmsg
+    seclabel u:r:vendor_modprobe:s0
+    disabled
+    oneshot
+
+service console_qc /system/bin/sh
+    class core
+    console
+    disabled
+    user shell
+    group shell log readproc
+    seclabel u:r:shell:s0
+    setenv HOSTNAME console
+
+on init
+    start console_qc
+
+on property:dev.bootcomplete=1 && property:ro.boot.vsock_local_cid=*
+    start sdv_someip_broker_agent
