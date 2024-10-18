@@ -78,3 +78,16 @@ on init
 
 on property:dev.bootcomplete=1 && property:ro.boot.vsock_local_cid=*
     start sdv_someip_broker_agent
+
+# Declare and start the SDV SOME/IP stack agent.
+service sdv_someip_stack_agent /vendor/bin/sdv_someip_stack_agent
+    class core
+    disabled
+    user system
+    group system
+    setenv VSOMEIP_CONFIGURATION_vsomeip_vlan1500 /vendor/etc/someip/vsomeip_vlan1500.json
+    setenv VSOMEIP_CONFIGURATION_vsomeip_vlan1510 /vendor/etc/someip/vsomeip_vlan1510.json
+
+on property:dev.bootcomplete=1 && property:ro.boot.vsock_local_cid=*
+    mkdir /data/vendor/someip 0770 system system
+    start sdv_someip_stack_agent

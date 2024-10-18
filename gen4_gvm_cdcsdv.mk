@@ -25,3 +25,9 @@ LOCAL_ANDROIDBOOT_INIT_RC := /vendor/etc/init/hw/init.target.rc
 PRODUCT_ENFORCE_VINTF_MANIFEST := false
 PRODUCT_COPY_FILES += \
 		      device/qcom/gen4_gvm_cdcsdv/init.target.rc:vendor/etc/init/hw/init.target.rc \
+
+# SOME/IP stack
+PRODUCT_PACKAGES += \
+                    qc_sdv_someip_stack_agent \
+                    vsomeip_vlan1500.json \
+                    vsomeip_vlan1510.json \
