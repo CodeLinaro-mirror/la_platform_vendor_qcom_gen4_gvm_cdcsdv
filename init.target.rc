@@ -3,6 +3,7 @@
 
 
 import /system/etc/init/init.sdv_core_base.rc
+import /system_ext/etc/init/automs_vlan.rc
 
 on property:dev.bootcomplete=1
     exec u:r:vendor_modprobe:s0 -- vendor/bin/modprobe -a -d /vendor_dlkm/lib/modules/ virtio_net
@@ -12,7 +13,6 @@ on property:dev.bootcomplete=1
     exec - root root -- /system/bin/ip route add default via 192.168.1.2 dev eth0
     exec - root root -- /system/bin/ifconfig eth0 up
     exec - root root -- /system/bin/ip rule add from all lookup main
-    exec_start create-vlan
     setprop service.adb.tcp.port 5555
     setprop service.adb.listen_addrs tcp:5555
     start adbd
@@ -23,7 +23,7 @@ on post-fs-data
     write /dev/kmsg "gki.modprobe"
     exec_start gki.modprobe
     write /dev/kmsg "vendor.modprobe"
-    #exec_start vendor.modprobe
+    exec_start vendor.modprobe
 
 service gki.modprobe /vendor/bin/system_dlkm_modprobe.sh
     class main
@@ -53,16 +53,6 @@ service vendor.agm-1-0 /vendor/bin/hw/vendor.qti.hardware.AGMIPC@1.0-service
     group system audio media mediadrm oem_2901 wakelock
     capabilities BLOCK_SUSPEND SYS_NICE
     disabled
-
-service create-vlan /vendor/bin/create_vlan_vm_1.sh
-    class main
-    user root
-    group root system shell inet net_admin
-    capabilities NET_ADMIN
-    stdio_to_kmsg
-    seclabel u:r:vendor_modprobe:s0
-    disabled
-    oneshot
 
 service console_qc /system/bin/sh
     class core
