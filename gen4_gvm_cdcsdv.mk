@@ -1,6 +1,9 @@
 #Configure derivative suffix for conditional compilation
 PRODUCT_MANUFACTURER := Qualcomm
 
+PRODUCT_COPY_FILES += \
+      device/qcom/gen4_gvm_cdcsdv/init.target.rc:vendor/etc/init/hw/init.target.rc \
+
 # Inherit from the base product
 include device/qcom/gen4_gvm_sdv/gen4_gvm_sdv.mk
 TARGET_BOARD_DERIVATIVE_SUFFIX:=_cdcsdv
@@ -23,5 +26,3 @@ KERNEL_MODULES_OUT := out/target/product/$(TARGET_BOARD_PLATFORM)$(TARGET_BOARD_
 LOCAL_ANDROIDBOOT_INIT_RC := /vendor/etc/init/hw/init.target.rc
 
 PRODUCT_ENFORCE_VINTF_MANIFEST := false
-PRODUCT_COPY_FILES += \
-		      device/qcom/gen4_gvm_cdcsdv/init.target.rc:vendor/etc/init/hw/init.target.rc \
