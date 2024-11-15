@@ -23,7 +23,7 @@ on post-fs-data
     write /dev/kmsg "gki.modprobe"
     exec_start gki.modprobe
     write /dev/kmsg "vendor.modprobe"
-    #exec_start vendor.modprobe
+    exec_start vendor.modprobe
 
 service gki.modprobe /vendor/bin/system_dlkm_modprobe.sh
     class main

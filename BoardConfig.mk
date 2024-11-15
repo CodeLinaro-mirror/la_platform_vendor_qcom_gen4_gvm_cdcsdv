@@ -18,7 +18,7 @@ TARGET_2ND_CPU_VARIANT :=
 BOARD_KERNEL_CMDLINE :=
 BOARD_BOOTCONFIG :=
 
-ifneq ( ,$(filter V VanillaIceCream 15,$(PLATFORM_VERSION)))
+ifneq ( ,$(filter V VanillaIceCream 15 W Baklava 16,$(PLATFORM_VERSION)))
 TARGET_ANDROID_BELOW_V15 := false
 else
 TARGET_ANDROID_BELOW_V15 := true
