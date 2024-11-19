@@ -4,8 +4,9 @@
 
 import /system/etc/init/init.sdv_core_base.rc
 import /system_ext/etc/init/automs_vlan.rc
+import /vendor/etc/init/android.hardware.security.keymint-service.rc
 
-on property:dev.bootcomplete=1
+on fs
     exec u:r:vendor_modprobe:s0 -- vendor/bin/modprobe -a -d /vendor_dlkm/lib/modules/ virtio_net
     exec u:r:vendor_modprobe:s0 -- vendor/bin/modprobe -a -d /vendor_dlkm/lib/modules/ stub_dlkm
     exec u:r:vendor_modprobe:s0 -- vendor/bin/modprobe -a -d /vendor_dlkm/lib/modules/ machine_dlkm
@@ -18,7 +19,7 @@ on property:dev.bootcomplete=1
     start adbd
     mkdir /dev/socket/agm 0777 system system
 
-on post-fs-data
+on early-fs
     # load kernel modules
     write /dev/kmsg "gki.modprobe"
     exec_start gki.modprobe
