@@ -28,8 +28,9 @@ PRODUCT_ENFORCE_VINTF_MANIFEST := false
 
 #TARGET_USES_QMAA_OVERRIDE_FASTCV := false
 
-# SOME/IP stack
+# AAOS-SDV SOME/IP stack agent HAL
 PRODUCT_PACKAGES += \
                     qc_sdv_someip_stack_agent \
                     vsomeip_vlan1500.json \
                     vsomeip_vlan1510.json \
+                    someip_stack_agent_testapp \
