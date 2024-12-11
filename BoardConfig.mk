@@ -27,20 +27,16 @@ endif
 BOARD_BOOTCONFIG := androidboot.hardware=qcom androidboot.selinux=permissive androidboot.memcg=1 androidboot.recover_usb=1
 BOARD_KERNEL_CMDLINE := debug user_debug=31 loglevel=9 print-fatal-signals=1  init=/init swiotlb=4096  kpti=0 pcie_ports=compat firmware_class.path=/vendor/firmware_mnt/image
 
-BOARD_KERNEL_CMDLINE += console=hvc0,115200
-#BOARD_BOOTCONFIG += androidboot.console=hvc0
-BOARD_BOOTCONFIG += androidboot.console=ttyAMA0 earlycon=pl011,0x1c090000
+BOARD_BOOTCONFIG += androidboot.console=ttyAMA0
 
 BOARD_BOOTCONFIG += androidboot.init_rc=$(LOCAL_ANDROIDBOOT_INIT_RC) \
                     kernel.vmw_vsock_virtio_transport_common.virtio_transport_max_vsock_pkt_buf_size=16384 \
                     androidboot.microdroid.debuggable=1 \
                     androidboot.adb.enabled=1
 
-BOARD_KERNEL_CMDLINE +=  printk.devkmsg=on log_buf_len=4M  printk_ratelimit=0 printk_ratelimit_burst=0 \
+BOARD_KERNEL_CMDLINE += log_buf_len=4M \
                          audit=1 \
                          panic=-1 \
-			 androidboot.console=ttyAMA0 earlycon=pl011,0x1c090000 debug loglevel=9 \
-			 console=ttyAMA0 \
                          init_rc=$(LOCAL_ANDROIDBOOT_INIT_RC)
 
 TARGET_USERIMAGES_SPARSE_EXT_DISABLED := false
@@ -51,7 +47,4 @@ TARGET_USERIMAGES_SPARSE_F2FS_DISABLED := false
 
 -include $(QCPATH)/common/gen4_gvm_cdcsdv/BoardConfigVendor.mk
 
-#BOARD_VENDOR_SEPOLICY_DIRS += device/qcom/gen4_gvm_cdcsdv/sepolicy
-#BOARD_VENDOR_SEPOLICY_DIRS += device/google/sdv/sdv_core_base/sepolicy
-#BOARD_VENDOR_SEPOLICY_DIRS += device/google/sdv/sdv_base/sepolicy
 ENABLE_WIDEVINE_DRM := false
