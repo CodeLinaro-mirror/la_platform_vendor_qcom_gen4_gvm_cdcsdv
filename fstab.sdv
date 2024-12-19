@@ -11,3 +11,12 @@ vendor_dlkm                                            /vendor_dlkm            e
 /dev/block/persist                                     /mnt/vendor/persist     ext4    rw,noatime                                           defaults
 /dev/block/by-name/misc                                /misc                   emmc    defaults                                             defaults
 /dev/block/modem                                       /vendor/firmware_mnt    vfat    ro,shortname=lower,uid=0,gid=1000,dmask=227,fmask=337,context=u:object_r:firmware_file:s0               defaults,slotselect
+
+#CDC specific ufs partitions mount rules
+/dev/block/factory                                /mnt/vendor/factory      ext4   rw,noatime,nosuid,nodev               latemount,wait,check
+/dev/block/vvmtruststore                          /mnt/vvmtruststore       ext4   rw,noatime,nosuid,nodev               latemount,wait,check
+/dev/block/update                                 /mnt/update              ext4   rw,noatime,nosuid,nodev               latemount,wait,check
+/dev/block/persist-alliance                       /mnt/product/persist-alliance ext4 rw,noatime,nosuid,nodev            latemount,wait,check
+/dev/block/oem_map                                /mnt/oem_map            ext4   rw,noatime,nosuid,nodev               latemount,wait,check
+/dev/block/oem0                                   /mnt/oem0               ext4   rw,noatime,nosuid,nodev               latemount,wait,check
+/dev/block/oem1                                   /mnt/oem1               ext4   rw,noatime,nosuid,nodev               latemount,wait,check
