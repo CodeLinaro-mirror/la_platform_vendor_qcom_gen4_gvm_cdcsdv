@@ -50,7 +50,7 @@ service vendor.modprobe /vendor/bin/vendor_modprobe.sh
     on service_dlkm_started
 
 service vendor.agm-1-0 /vendor/bin/hw/vendor.qti.hardware.AGMIPC@1.0-service
-    class hal
+    class core
     user system
     interface vendor.qti.hardware.AGMIPC@1.0::IAGM default
     # media gid needed for /dev/fm (radio) and for /data/misc/media (tee)
@@ -69,6 +69,7 @@ service console_qc /system/bin/sh
 
 on init
     start console_qc
+    exec u:r:vendor_init-qti-AGMIPC-sh:s0 -- /vendor/bin/init.qti.AGMIPC.sh
 
 on property:dev.bootcomplete=1 && property:ro.boot.vsock_local_cid=*
     start sdv_someip_broker_agent
