@@ -6,7 +6,7 @@ import /system_ext/etc/init/init_open_dice_from_file.rc
 import /system/etc/init/init.sdv_core_base.rc
 import /vendor/etc/init/android.hardware.boot-service.qti.rc
 import /system_ext/etc/init/automs_vlan.rc
-import /vendor/etc/init/android.hardware.security.keymint-service.rc
+import /vendor/etc/init/android.hardware.security.keymint-service-qti.rc
 
 on fs
     write /dev/kmsg "boot_kpi: M - INITRC on fs trigger"
