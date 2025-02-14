@@ -106,3 +106,10 @@ on property:dev.bootcomplete=1 && property:ro.boot.vsock_local_cid=*
     write /sys/kernel/boot_kpi/kpi_values "M - INITRC on SOME/IP Stack Agent trigger"
     mkdir /data/vendor/someip 0770 system system
     start sdv_someip_stack_agent
+
+on early-init && property:ro.build.type=userdebug
+    # Create tmpfs for use by the shell user.
+    mount tmpfs tmpfs /tmp nosuid nodev rw
+    restorecon /tmp
+    chown shell shell /tmp
+    chmod 0771 /tmp
