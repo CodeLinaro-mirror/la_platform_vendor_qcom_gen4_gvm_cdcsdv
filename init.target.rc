@@ -87,7 +87,7 @@ on init
     start console_qc
     exec u:r:vendor_init-qti-AGMIPC-sh:s0 -- /vendor/bin/init.qti.AGMIPC.sh
 
-on property:dev.bootcomplete=1 && property:ro.boot.vsock_local_cid=*
+on property:dev.bootcomplete=1 && property:ro.sdv.vsock_local_cid=*
     write /dev/kmsg "boot_kpi: M - INITRC on boot complete trigger"
     write /sys/kernel/boot_kpi/kpi_values "M - INITRC on boot complete trigger"
     start sdv_someip_broker_agent
@@ -101,7 +101,7 @@ service sdv_someip_stack_agent /vendor/bin/qc_sdv_someip_stack_agent
     setenv VSOMEIP_CONFIGURATION_vsomeip_vlan1500 /vendor/etc/someip/vsomeip_vlan1500.json
     setenv VSOMEIP_CONFIGURATION_vsomeip_vlan1510 /vendor/etc/someip/vsomeip_vlan1510.json
 
-on property:dev.bootcomplete=1 && property:ro.boot.vsock_local_cid=*
+on property:dev.bootcomplete=1 && property:ro.sdv.vsock_local_cid=*
     write /dev/kmsg "boot_kpi: M - INITRC on SOME/IP Stack Agent trigger"
     write /sys/kernel/boot_kpi/kpi_values "M - INITRC on SOME/IP Stack Agent trigger"
     mkdir /data/vendor/someip 0770 system system
