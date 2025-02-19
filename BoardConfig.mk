@@ -34,6 +34,7 @@ BOARD_BOOTCONFIG += androidboot.console=ttyAMA0
 BOARD_BOOTCONFIG += androidboot.init_rc=$(LOCAL_ANDROIDBOOT_INIT_RC) \
                     kernel.vmw_vsock_virtio_transport_common.virtio_transport_max_vsock_pkt_buf_size=16384 \
                     androidboot.microdroid.debuggable=1 \
+                    androidboot.sdv.rpc.interface=eth0 \
                     androidboot.adb.enabled=1
 
 BOARD_KERNEL_CMDLINE += log_buf_len=4M \
