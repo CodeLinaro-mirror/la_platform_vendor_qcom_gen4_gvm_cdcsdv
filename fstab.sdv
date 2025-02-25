@@ -16,7 +16,10 @@ vendor_dlkm                                            /vendor_dlkm            e
 /dev/block/factory                                /mnt/vendor/factory           ext4   rw,noatime,nosuid,nodev,discard               latemount,wait,check
 /dev/block/vvmtruststore                          /mnt/vvmtruststore            ext4   rw,noatime,nosuid,nodev,discard               latemount,wait,check
 /dev/block/update                                 /mnt/update                   ext4   rw,noatime,nosuid,nodev,discard               latemount,wait,check
-/dev/block/persist-alliance                       /mnt/product/persist-alliance ext4   rw,noatime,nosuid,nodev,discard               latemount,wait,check
+/dev/block/persist-alliance_b                   /mnt/product/persist-alliance_b ext4   rw,noatime,nosuid,nodev,discard               latemount,wait,check
 /dev/block/oem_map                                /mnt/oem_map                  ext4   rw,noatime,nosuid,nodev,discard               latemount,wait,check
 /dev/block/oem0                                   /mnt/oem0                     ext4   rw,noatime,nosuid,nodev,discard               latemount,wait,check
 /dev/block/oem1                                   /mnt/oem1                     ext4   rw,noatime,nosuid,nodev,discard               latemount,wait,check
+/dev/block/confcal_0                              /mnt/confcal_0                vfat   rw,noatime,nosuid,nodev,discard               latemount,wait,check
+/dev/block/confcal_1                              /mnt/confcal_1                vfat   rw,noatime,nosuid,nodev,discard               latemount,wait,check
+/dev/block/persist-alliance_a                   /mnt/product/persist-alliance_a ext4   rw,noatime,nosuid,nodev,discard               latemount,wait,check
