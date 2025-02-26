@@ -43,6 +43,22 @@ on early-fs
     write /dev/kmsg "boot_kpi: M - INITRC vendor.modprobe end"
     write /sys/kernel/boot_kpi/kpi_values "M - INITRC vendor.modprobe end"
 
+# Updating the symlinks for the new CDC-partitions
+on early-fs && property:ro.product.name=gen4_gvm_cdcsdv
+    symlink /dev/block/asset_0              /dev/block/by-name/asset_0
+    symlink /dev/block/asset_1              /dev/block/by-name/asset_1
+    symlink /dev/block/vvmtruststore        /dev/block/by-name/vvmtruststore
+    symlink /dev/block/update               /dev/block/by-name/update
+    symlink /dev/block/persist-alliance     /dev/block/by-name/persist-alliance
+    symlink /dev/block/oem_a                /dev/block/by-name/oem_a
+    symlink /dev/block/oem_b                /dev/block/by-name/oem_b
+    symlink /dev/block/oem_map              /dev/block/by-name/oem_map
+    symlink /dev/block/oem0                 /dev/block/by-name/oem0
+    symlink /dev/block/oem1                 /dev/block/by-name/oem1
+    symlink /dev/block/oemfactorystate      /dev/block/by-name/oemfactorystate
+    symlink /dev/block/factory              /dev/block/by-name/factory
+    symlink /dev/block/oem_data             /dev/block/by-name/oem_data
+
 service gki.modprobe /vendor/bin/system_dlkm_modprobe.sh
     class main
     user root
