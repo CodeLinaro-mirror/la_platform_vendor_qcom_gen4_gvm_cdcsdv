@@ -81,6 +81,27 @@ service console_qc /system/bin/sh
     seclabel u:r:shell:s0
     setenv HOSTNAME console
 
+# Disable the dt_agent from Google
+service dt_agent /system/bin/true
+    class core
+    oneshot
+    override
+    disabled
+    user system
+    group system
+
+# Declare and start the SDV Data Tunnel agent with an increased file descriptor limit
+service dt_agent_cdc /system_ext/bin/dt_agent
+    class core
+    disabled
+    user shell
+    group shell
+    rlimit nofile 32768 32768
+
+# Start the SDV Data Tunnel agent
+on property:dev.bootcomplete=1
+    start dt_agent_cdc
+
 on init
     write /dev/kmsg "boot_kpi: M - INITRC on init trigger"
     write /sys/kernel/boot_kpi/kpi_values "M - INITRC on init trigger"
