@@ -49,7 +49,7 @@ on early-fs && property:ro.product.name=gen4_gvm_cdcsdv
     symlink /dev/block/asset_1              /dev/block/by-name/asset_1
     symlink /dev/block/vvmtruststore        /dev/block/by-name/vvmtruststore
     symlink /dev/block/update               /dev/block/by-name/update
-    symlink /dev/block/persist-alliance     /dev/block/by-name/persist-alliance
+    symlink /dev/block/persist-alliance_b   /dev/block/by-name/persist-alliance_b
     symlink /dev/block/oem_a                /dev/block/by-name/oem_a
     symlink /dev/block/oem_b                /dev/block/by-name/oem_b
     symlink /dev/block/oem_map              /dev/block/by-name/oem_map
@@ -58,6 +58,10 @@ on early-fs && property:ro.product.name=gen4_gvm_cdcsdv
     symlink /dev/block/oemfactorystate      /dev/block/by-name/oemfactorystate
     symlink /dev/block/factory              /dev/block/by-name/factory
     symlink /dev/block/oem_data             /dev/block/by-name/oem_data
+    symlink /dev/block/confcal_0            /dev/block/by-name/confcal_0
+    symlink /dev/block/confcal_1            /dev/block/by-name/confcal_1
+    symlink /dev/block/persist-alliance_a   /dev/block/by-name/persist-alliance_a
+
 
 service gki.modprobe /vendor/bin/system_dlkm_modprobe.sh
     class main
