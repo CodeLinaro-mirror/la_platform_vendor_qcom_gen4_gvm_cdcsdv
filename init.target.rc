@@ -60,7 +60,7 @@ on early-fs && property:ro.product.name=gen4_gvm_cdcsdv
     symlink /dev/block/oem_data             /dev/block/by-name/oem_data
     symlink /dev/block/confcal_0            /dev/block/by-name/confcal_0
     symlink /dev/block/confcal_1            /dev/block/by-name/confcal_1
-    symlink /dev/block/persist-alliance_b   /dev/block/by-name/persist-alliance_b
+    symlink /dev/block/persist-alliance_a   /dev/block/by-name/persist-alliance_a
 
 service gki.modprobe /vendor/bin/system_dlkm_modprobe.sh
     class main
