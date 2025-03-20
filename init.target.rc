@@ -76,10 +76,10 @@ service vendor.modprobe /vendor/bin/vendor_modprobe.sh
     import service_dlkm
     on service_dlkm_started
 
-service vendor.agm-1-0 /vendor/bin/hw/vendor.qti.hardware.AGMIPC@1.0-service
+service vendor.agm-1-0 /vendor/bin/hw/agmipcservice
     class core
     user system
-    interface vendor.qti.hardware.AGMIPC@1.0::IAGM default
+    interface aidl vendor.qti.hardware.agm.IAGM/default
     # media gid needed for /dev/fm (radio) and for /data/misc/media (tee)
     group system audio media mediadrm oem_2901 wakelock
     capabilities BLOCK_SUSPEND SYS_NICE
