@@ -6,7 +6,7 @@ import /system_ext/etc/init/init_open_dice_from_file.rc
 import /system/etc/init/init.sdv_core_base.rc
 import /vendor/etc/init/android.hardware.boot-service.qti.rc
 import /system_ext/etc/init/automs_vlan.rc
-import /vendor/etc/init/android.hardware.security.keymint-service.rc
+import /vendor/etc/init/android.hardware.security.keymint-service-qti.rc
 
 on fs
     write /sys/kernel/boot_kpi/kpi_values "M - INITRC on fs trigger"
@@ -55,7 +55,6 @@ on early-fs && property:ro.product.name=gen4_gvm_cdcsdv
     symlink /dev/block/confcal_0            /dev/block/by-name/confcal_0
     symlink /dev/block/confcal_1            /dev/block/by-name/confcal_1
     symlink /dev/block/persist-alliance_a   /dev/block/by-name/persist-alliance_a
-
 
 service gki.modprobe /vendor/bin/system_dlkm_modprobe.sh
     class main
