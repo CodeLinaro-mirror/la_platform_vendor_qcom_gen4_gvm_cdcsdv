@@ -118,7 +118,10 @@ on property:dev.bootcomplete=1
 on init
     write /sys/kernel/boot_kpi/kpi_values "M - INITRC on init trigger"
     start console_qc
+    write /dev/kmsg "M - audio agm init started"
     exec u:r:vendor_init-qti-AGMIPC-sh:s0 -- /vendor/bin/init.qti.AGMIPC.sh
+    write /dev/kmsg "M - audio agm play started"
+    start agmplay
 
 on property:dev.bootcomplete=1 && property:ro.sdv.vsock_local_cid=*
     write /dev/kmsg "boot_kpi: M - INITRC on boot complete trigger"
@@ -146,3 +149,12 @@ on early-init && property:ro.build.type=userdebug
     restorecon /tmp
     chown shell shell /tmp
     chmod 0771 /tmp
+
+ #agmplay
+ service agmplay /vendor/bin/HarPalTest /vendor/etc/bike_bell.wav -usecase s
+     class core
+     user system
+     group system wakelock
+     capabilities BLOCK_SUSPEND
+     oneshot
+     disabled
