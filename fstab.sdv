@@ -14,7 +14,6 @@ vendor_dlkm                                            /vendor_dlkm            e
 
 #CDC specific ufs partitions mount rules
 /dev/block/factory                                /mnt/vendor/factory           ext4   rw,noatime,nosuid,nodev,discard               latemount,wait,check
-/dev/block/vvmtruststore                          /mnt/vvmtruststore            ext4   rw,noatime,nosuid,nodev,discard               latemount,wait,check
 /dev/block/update                                 /mnt/update                   ext4   rw,noatime,nosuid,nodev,discard               latemount,wait,check
 /dev/block/persist-alliance_b                   /mnt/product/persist-alliance_b ext4   rw,noatime,nosuid,nodev,discard               latemount,wait,check
 /dev/block/oem_map                                /mnt/oem_map                  ext4   rw,noatime,nosuid,nodev,discard               latemount,wait,check
