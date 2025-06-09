@@ -2,9 +2,11 @@
 # SPDX-License-Identifier: BSD-3-Clause-Clear
 
 
-import /system_ext/etc/init/init_open_dice_from_file.rc
+import /system_ext/etc/init/init_open_dice_service.rc
 import /system/etc/init/init.sdv_core_base.rc
 import /vendor/etc/init/android.hardware.boot-service.qti.rc
+import /system/etc/init/gsid.rc
+import /system/etc/init/vvmtruststore.rc
 import /system_ext/etc/init/automs_vlan.rc
 import /vendor/etc/init/android.hardware.security.keymint-service-qti.rc
 
