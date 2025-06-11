@@ -9,6 +9,9 @@ import /system/etc/init/gsid.rc
 import /system/etc/init/vvmtruststore.rc
 import /system_ext/etc/init/automs_vlan.rc
 import /vendor/etc/init/android.hardware.security.keymint-service-qti.rc
+import /vendor/etc/init/vhal-qti-service.rc
+import /vendor/etc/init/vendor-qti-sdv-carpower.rc
+import /vendor/etc/init/sdv-car-power.rc
 
 on early-init
     write /dev/kmsg "boot_kpi: M - INITRC Userspace Start  ${ro.boottime.init}"
