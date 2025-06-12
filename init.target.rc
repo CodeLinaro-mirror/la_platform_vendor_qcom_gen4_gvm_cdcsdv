@@ -2,40 +2,43 @@
 # SPDX-License-Identifier: BSD-3-Clause-Clear
 
 
-import /system_ext/etc/init/init_open_dice_from_file.rc
+import /system_ext/etc/init/init_open_dice_service.rc
 import /system/etc/init/init.sdv_core_base.rc
 import /vendor/etc/init/android.hardware.boot-service.qti.rc
+import /system/etc/init/gsid.rc
+import /system/etc/init/vvmtruststore.rc
 import /system_ext/etc/init/automs_vlan.rc
 import /vendor/etc/init/android.hardware.security.keymint-service-qti.rc
+import /vendor/etc/init/vhal-qti-service.rc
+import /vendor/etc/init/vendor-qti-sdv-carpower.rc
+import /vendor/etc/init/sdv-car-power.rc
 
-on fs
-    write /sys/kernel/boot_kpi/kpi_values "M - INITRC on fs trigger"
-    exec u:r:vendor_modprobe:s0 -- vendor/bin/modprobe -a -d /vendor_dlkm/lib/modules/ virtio_net
-    exec u:r:vendor_modprobe:s0 -- vendor/bin/modprobe -a -d /vendor_dlkm/lib/modules/ stub_dlkm
-    exec u:r:vendor_modprobe:s0 -- vendor/bin/modprobe -a -d /vendor_dlkm/lib/modules/ machine_dlkm
-    write /sys/kernel/boot_kpi/kpi_values "M - INITRC IP Configuration Start"
-    exec - root root -- /system/bin/ifconfig eth0 192.168.1.2 netmask 255.255.255.0
-    exec - root root -- /system/bin/ifconfig eth0 up
-    exec - root root -- /system/bin/ip rule add from all lookup main
-    # bring up vlan interface
-    write /sys/kernel/boot_kpi/kpi_values "M - INITRC VLAN Interface Setup Start"
-    setprop service.sc.create.vlan 1
+on early-init
+    write /dev/kmsg "boot_kpi: M - INITRC Userspace Start  ${ro.boottime.init}"
+    write /sys/kernel/boot_kpi/kpi_values "boot_kpi: M - INITRC Userspace Start  ${ro.boottime.init}"
     setprop service.adb.tcp.port 5555
     setprop service.adb.listen_addrs tcp:5555
     start adbd
-    mkdir /dev/socket/agm 0777 system system
+    mkdir /dev/socket/agm 0660 system system
 
 on early-fs
-    write /sys/kernel/boot_kpi/kpi_values "M - INITRC on early fs trigger"
+    exec_background u:r:vendor_modprobe:s0 -- /vendor/bin/modprobe -d /vendor_dlkm/lib/modules/ stub_dlkm machine_dlkm spf_machine_dlkm msm_hyp msm_geni_serial
     # load kernel modules
-    write /dev/kmsg "gki.modprobe"
+    write /dev/kmsg "M - INITRC gki.modprobe"
     write /sys/kernel/boot_kpi/kpi_values "M - INITRC gki.modprobe start"
     exec_start gki.modprobe
-    write /dev/kmsg "vendor.modprobe"
-    write /sys/kernel/boot_kpi/kpi_values "M - INITRC gki.modprobe end"
-    write /sys/kernel/boot_kpi/kpi_values "M - INITRC vendor.modprobe start"
-    exec_start vendor.modprobe
-    write /sys/kernel/boot_kpi/kpi_values "M - INITRC vendor.modprobe end"
+
+on fs
+    write /dev/kmsg "boot_kpi: M - INITRC IP Configuration Start"
+    write /sys/kernel/boot_kpi/kpi_values "boot_kpi: M - INITRC IP Configuration Start"
+    exec_background - root root -- /system/bin/ifconfig eth0 192.168.1.2 netmask 255.255.255.0
+    exec_background - root root -- /system/bin/ifconfig eth0 up
+    exec_background - root root -- /system/bin/ip rule add from all lookup main
+    # bring up vlan interface
+    write /dev/kmsg "boot_kpi: M - INITRC VLAN Interface Setup Start"
+    write /sys/kernel/boot_kpi/kpi_values "boot_kpi: M - INITRC VLAN Interface Setup Start"
+    setprop service.sc.create.vlan 1
+    exec_background u:r:vendor_modprobe:s0 -- /vendor/bin/modprobe -d /vendor_dlkm/lib/modules/ boot_marker
 
 # Updating the symlinks for the new CDC-partitions
 on early-fs && property:ro.product.name=gen4_gvm_cdcsdv
@@ -116,7 +119,8 @@ on property:dev.bootcomplete=1
     start dt_agent_cdc
 
 on init
-    write /sys/kernel/boot_kpi/kpi_values "M - INITRC on init trigger"
+    write /dev/kmsg "boot_kpi: M - INITRC on init trigger"
+    write /sys/kernel/boot_kpi/kpi_values "boot_kpi: M - INITRC on init trigger"
     start console_qc
     write /dev/kmsg "M - audio agm init started"
     exec u:r:vendor_init-qti-AGMIPC-sh:s0 -- /vendor/bin/init.qti.AGMIPC.sh
@@ -125,7 +129,7 @@ on init
 
 on property:dev.bootcomplete=1 && property:ro.sdv.vsock_local_cid=*
     write /dev/kmsg "boot_kpi: M - INITRC on boot complete trigger"
-    write /sys/kernel/boot_kpi/kpi_values "M - INITRC on boot complete trigger"
+    write /sys/kernel/boot_kpi/kpi_values "boot_kpi: M - INITRC on boot complete trigger"
     start sdv_someip_broker_agent
 
 # Declare and start the SDV SOME/IP stack agent.
@@ -139,11 +143,11 @@ service sdv_someip_stack_agent /vendor/bin/qc_sdv_someip_stack_agent
 
 on property:dev.bootcomplete=1 && property:ro.sdv.vsock_local_cid=*
     write /dev/kmsg "boot_kpi: M - INITRC on SOME/IP Stack Agent trigger"
-    write /sys/kernel/boot_kpi/kpi_values "M - INITRC on SOME/IP Stack Agent trigger"
+    write /sys/kernel/boot_kpi/kpi_values "boot_kpi: M - INITRC on SOME/IP Stack Agent trigger"
     mkdir /data/vendor/someip 0770 system system
     start sdv_someip_stack_agent
 
-on early-init && property:ro.build.type=userdebug
+on late-init && property:ro.build.type=userdebug
     # Create tmpfs for use by the shell user.
     mount tmpfs tmpfs /tmp nosuid nodev rw
     restorecon /tmp
