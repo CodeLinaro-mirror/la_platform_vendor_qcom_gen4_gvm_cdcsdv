@@ -42,6 +42,9 @@ on fs
 
 # Updating the symlinks for the new CDC-partitions
 on early-fs && property:ro.product.name=gen4_gvm_cdcsdv
+    symlink /dev/block/vbmeta_a             /dev/block/by-name/vbmeta_a
+    symlink /dev/block/vbmeta_b             /dev/block/by-name/vbmeta_b
+    symlink /dev/block/confraw              /dev/block/by-name/confraw
     symlink /dev/block/asset_0              /dev/block/by-name/asset_0
     symlink /dev/block/asset_1              /dev/block/by-name/asset_1
     symlink /dev/block/vvmtruststore        /dev/block/by-name/vvmtruststore
