@@ -1,4 +1,4 @@
-# Copyright (c) 2023-2024 Qualcomm Innovation Center, Inc. All rights reserved.
+# Copyright (c) Qualcomm Technologies, Inc. and/or its subsidiaries.
 # SPDX-License-Identifier: BSD-3-Clause-Clear
 
 
@@ -148,6 +148,7 @@ on property:dev.bootcomplete=1 && property:ro.sdv.vsock_local_cid=*
     write /dev/kmsg "boot_kpi: M - INITRC on SOME/IP Stack Agent trigger"
     write /sys/kernel/boot_kpi/kpi_values "boot_kpi: M - INITRC on SOME/IP Stack Agent trigger"
     mkdir /data/vendor/someip 0770 system system
+    mkdir /dev/someip 0770 system system
     start sdv_someip_stack_agent
 
 on late-init && property:ro.build.type=userdebug
