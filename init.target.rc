@@ -12,6 +12,8 @@ import /vendor/etc/init/android.hardware.security.keymint-service-qti.rc
 import /vendor/etc/init/vhal-qti-service.rc
 import /vendor/etc/init/vendor-qti-sdv-carpower.rc
 import /vendor/etc/init/sdv-car-power.rc
+import /system/etc/init/android.system.suspend-service.rc
+import /vendor/etc/init/dumpstate-default.rc
 
 on early-init
     write /dev/kmsg "boot_kpi: M - INITRC Userspace Start  ${ro.boottime.init}"
