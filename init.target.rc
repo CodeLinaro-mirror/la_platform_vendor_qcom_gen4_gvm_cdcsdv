@@ -159,7 +159,7 @@ on late-init && property:ro.build.type=userdebug
     chmod 0771 /tmp
 
  #agmplay
- service agmplay /vendor/bin/HarPalTest /vendor/etc/bike_bell.wav -usecase s
+ service agmplay /vendor/bin/HarPalTest /vendor/etc/bike_bell.wav -usecase k
      class core
      user system
      group system wakelock
