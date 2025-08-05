@@ -164,6 +164,17 @@ on late-init && property:ro.build.type=userdebug
     chown shell shell /tmp
     chmod 0771 /tmp
 
+# Start Qseecom service and daemon
+on property:dev.bootcomplete=1
+    wait /dev/qseecom
+    chown system drmrpc /dev/qseecom
+    chmod 660 /dev/qseecom
+    # Create directories for FS/SFS listener
+    mkdir /data/vendor/tzstorage 0770 system system
+    mkdir /mnt/vendor/persist/data 0700 system system
+    start vendor.qseecomd
+    start qseecom-service
+
  #agmplay
  service agmplay /vendor/bin/HarPalTest /vendor/etc/bike_bell.wav -usecase k
      class core
@@ -172,3 +183,19 @@ on late-init && property:ro.build.type=userdebug
      capabilities BLOCK_SUSPEND
      oneshot
      disabled
+
+# Qseecom-service
+service qseecom-service /vendor/bin/hw/vendor.qti.hardware.qseecom@1.0-service
+    class hal
+    user system
+    group system drmrpc
+    interface aidl vendor.qti.hardware.qseecom
+    disabled
+
+# Qseecom daemon
+service vendor.qseecomd /vendor/bin/qseecomd
+    socket notify-topology stream 660 system drmrpc
+    class core
+    user root
+    group root drmrpc
+    disabled
