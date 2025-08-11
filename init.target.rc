@@ -133,8 +133,6 @@ on init
     start console_qc
     write /dev/kmsg "M - audio agm init started"
     exec u:r:vendor_init-qti-AGMIPC-sh:s0 -- /vendor/bin/init.qti.AGMIPC.sh
-    write /dev/kmsg "M - audio agm play started"
-    start agmplay
 
 on property:dev.bootcomplete=1 && property:ro.sdv.vsock_local_cid=*
     write /dev/kmsg "boot_kpi: M - INITRC on boot complete trigger"
@@ -175,8 +173,8 @@ on property:dev.bootcomplete=1
     start vendor.qseecomd
     start qseecom-service
 
- #agmplay
- service agmplay /vendor/bin/HarPalTest /vendor/etc/bike_bell.wav -usecase k
+ #harpaltest
+ service harpaltest /vendor/bin/HarPalTest /vendor/etc/bike_bell.wav -usecase k
      class core
      user system
      group system wakelock
