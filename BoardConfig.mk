@@ -26,7 +26,8 @@ else
 TARGET_ANDROID_BELOW_V15 := true
 endif
 
-BOARD_BOOTCONFIG := androidboot.load_modules_parallel_mode=performance androidboot.hardware=qcom androidboot.selinux=permissive androidboot.memcg=1 androidboot.recover_usb=1
+BOARD_BOOTCONFIG := androidboot.load_modules_parallel_mode=performance androidboot.hardware=qcom androidboot.selinux=enforcing androidboot.memcg=1 androidboot.recover_usb=1
+
 BOARD_KERNEL_CMDLINE := debug user_debug=31 loglevel=9 print-fatal-signals=1  init=/init swiotlb=4096  kpti=0 pcie_ports=compat firmware_class.path=/vendor/firmware_mnt/image
 
 BOARD_BOOTCONFIG += androidboot.console=ttyAMA0
