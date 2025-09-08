@@ -126,10 +126,21 @@ on init
     start vendor.agm-1-0
     start harpaltest
 
+on early-fs
+    chown system system /dev/kmsg
+    chmod 0644 /dev/kmsg
+
+
 on property:dev.bootcomplete=1
     write /dev/kmsg "boot_kpi: M - INITRC on boot complete trigger"
     write /sys/kernel/boot_kpi/kpi_values "boot_kpi: M - INITRC on boot complete trigger"
+    write /dev/kmsg "boot_kpi: M - INITRC on Camera Frame Dump App trigger"
+    write /sys/kernel/boot_kpi/kpi_values "boot_kpi: M - Camera Test App Starting"
+    enable cam_test
+    write /dev/kmsg "M -  Camera Frame Dump App started"
+    start cam_test
     start sdv_someip_broker_agent
+
 
 # Declare and start the SDV SOME/IP stack agent.
 service sdv_someip_stack_agent /vendor/bin/qc_sdv_someip_stack_agent
@@ -189,3 +200,14 @@ service vendor.qseecomd /vendor/bin/qseecomd
     user root
     group root drmrpc
     disabled
+
+
+#camTest
+service cam_test vendor/bin/test_app_cib 3
+     seclabel u:r:cam_test:s0
+     class core
+     user system
+     group system wakelock camera
+     capabilities BLOCK_SUSPEND SYS_NICE
+     oneshot
+     disabled
