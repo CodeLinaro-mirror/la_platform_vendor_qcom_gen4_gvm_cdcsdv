@@ -131,8 +131,9 @@ on init
     write /dev/kmsg "boot_kpi: M - INITRC on init trigger"
     write /sys/kernel/boot_kpi/kpi_values "boot_kpi: M - INITRC on init trigger"
     start console_qc
-    write /dev/kmsg "M - audio agm init started"
-    exec u:r:vendor_init-qti-AGMIPC-sh:s0 -- /vendor/bin/init.qti.AGMIPC.sh
+    write /dev/kmsg "M - audio starting agm service"
+    start vendor.agm-1-0
+    start harpaltest
 
 on property:dev.bootcomplete=1 && property:ro.sdv.vsock_local_cid=*
     write /dev/kmsg "boot_kpi: M - INITRC on boot complete trigger"
@@ -175,12 +176,12 @@ on property:dev.bootcomplete=1
 
  #harpaltest
  service harpaltest /vendor/bin/HarPalTest /vendor/etc/bike_bell.wav -usecase k
-     class core
-     user system
-     group system wakelock
-     capabilities BLOCK_SUSPEND
-     oneshot
-     disabled
+    class core
+    user system
+    group system wakelock
+    capabilities BLOCK_SUSPEND
+    oneshot
+    disabled
 
 # Qseecom-service
 service qseecom-service /vendor/bin/hw/vendor.qti.hardware.qseecom@1.0-service
