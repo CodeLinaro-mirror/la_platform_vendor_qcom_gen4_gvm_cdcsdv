@@ -32,15 +32,6 @@ on early-fs
     exec_start gki.modprobe
 
 on fs
-    write /dev/kmsg "boot_kpi: M - INITRC IP Configuration Start"
-    write /sys/kernel/boot_kpi/kpi_values "boot_kpi: M - INITRC IP Configuration Start"
-    exec_background - root root -- /system/bin/ifconfig eth0 192.168.1.2 netmask 255.255.255.0
-    exec_background - root root -- /system/bin/ifconfig eth0 up
-    exec_background - root root -- /system/bin/ip rule add from all lookup main
-    # bring up vlan interface
-    write /dev/kmsg "boot_kpi: M - INITRC VLAN Interface Setup Start"
-    write /sys/kernel/boot_kpi/kpi_values "boot_kpi: M - INITRC VLAN Interface Setup Start"
-    setprop service.sc.create.vlan 1
     exec_background u:r:vendor_modprobe:s0 -- /vendor/bin/modprobe -d /vendor_dlkm/lib/modules/ boot_marker smcinvoke_dlkm tz_log_dlkm qseecom_dlkm qcrypto-msm_dlkm socinfo_dt eavb_fe ptp_virtual
 
 # Updating the symlinks for the new CDC-partitions
