@@ -134,6 +134,9 @@ on early-fs
 on property:dev.bootcomplete=1
     write /dev/kmsg "boot_kpi: M - INITRC on boot complete trigger"
     write /sys/kernel/boot_kpi/kpi_values "boot_kpi: M - INITRC on boot complete trigger"
+    mkdir /data/vendor/cib 0770 system system
+    chown system system /data/vendor/cib
+    chmod 0770 /data/vendor/cib
     write /dev/kmsg "boot_kpi: M - INITRC on Camera Frame Dump App trigger"
     write /sys/kernel/boot_kpi/kpi_values "boot_kpi: M - Camera Test App Starting"
     enable cam_test
@@ -203,7 +206,7 @@ service vendor.qseecomd /vendor/bin/qseecomd
 
 
 #camTest
-service cam_test vendor/bin/test_app_cib 3
+service cam_test vendor/bin/test_app_cib
      seclabel u:r:cam_test:s0
      class core
      user system
