@@ -15,6 +15,20 @@ import /vendor/etc/init/sdv-car-power.rc
 import /system/etc/init/android.system.suspend-service.rc
 import /vendor/etc/init/dumpstate-default.rc
 import /vendor/etc/init/car_power.rc
+import /vendor/etc/init/utc_daemon.rc
+
+#VNW
+on boot
+    write /dev/timeinfo 0
+    write /dev/utcshm 0
+    chmod 0660 /dev/timeinfo
+    chmod 0660 /dev/gptp_shm
+    chmod 0660 /dev/ptp0
+    chmod 0660 /dev/utcshm
+    chown system vendor_ptp /dev/timeinfo
+    chown system vendor_ptp /dev/utcshm
+    chown root vendor_ptp /dev/gptp_shm
+    chown root vendor_ptp /dev/ptp0
 
 on early-init
     write /dev/kmsg "boot_kpi: M - INITRC Userspace Start  ${ro.boottime.init}"
