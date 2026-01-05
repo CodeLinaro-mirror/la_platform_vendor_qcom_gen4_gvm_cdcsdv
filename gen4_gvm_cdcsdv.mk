@@ -38,3 +38,14 @@ PRODUCT_PACKAGES += \
                     vsomeip_vlan1500.json \
                     vsomeip_vlan1510.json \
                     someip_stack_agent_testapp \
+
+# -----------------------------------------------------------------------------
+# Remove unwanted DRM libraries from PRODUCT_PACKAGES after vendor additions.
+# These libraries should never ship in RBVM (DRM not supported).
+# -----------------------------------------------------------------------------
+RBVM_REMOVE_DRM_LIBS := \
+    libtzdrmgenprov \
+    libdrmMinimalfsHelper \
+    libprdrmengine
+
+PRODUCT_PACKAGES := $(filter-out $(RBVM_REMOVE_DRM_LIBS), $(PRODUCT_PACKAGES))
