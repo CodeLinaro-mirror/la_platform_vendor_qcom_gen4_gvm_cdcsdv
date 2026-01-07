@@ -15,7 +15,7 @@ PRODUCT_DEVICE := gen4_gvm_cdcsdv
 PRODUCT_BRAND := qti
 PRODUCT_MODEL := gen4_gvm_cdcsdv for arm64
 
-#CUSTOM_PATCHES_MODE := apply
+CUSTOM_PATCHES_MODE := apply
 
 PRODUCT_PACKAGES += fstab.sdv
 
