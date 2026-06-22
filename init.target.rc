@@ -121,9 +121,11 @@ service dt_agent /system/bin/true
 service dt_agent_cdc /system_ext/bin/dt_agent
     class core
     disabled
-    user shell
-    group shell
+    user system_ext_sdv_dt
+    group system
     rlimit nofile 32768 32768
+    # DT is not restarted once it completes, due to a failure, to allow OEMs to control VM restart.
+    oneshot
 
 # Start the SDV Data Tunnel agent
 on property:dev.bootcomplete=1

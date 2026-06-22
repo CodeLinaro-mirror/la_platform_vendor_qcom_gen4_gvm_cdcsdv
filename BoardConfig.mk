@@ -52,3 +52,4 @@ TARGET_USERIMAGES_SPARSE_F2FS_DISABLED := false
 -include $(QCPATH)/common/gen4_gvm_cdcsdv/BoardConfigVendor.mk
 
 ENABLE_WIDEVINE_DRM := false
+TARGET_FS_CONFIG_GEN  += device/google/sdv/sdv_core_base/config.fs
