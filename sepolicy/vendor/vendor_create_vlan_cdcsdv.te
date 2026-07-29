@@ -1,0 +1,41 @@
+# Copyright (c) Qualcomm Technologies, Inc. and/or its subsidiaries.
+# SPDX-License-Identifier: BSD-3-Clause-Clear
+
+# Vendor domain for RBVM VLAN creation script (/vendor/bin/create_vlan_vm_1.sh).
+# Script lives in vendor/bin (RBVM-only, guarded by gen4_gvm_cdcsdv vendor).
+#
+# vendor_executes_system_violators: exempts this domain from the neverallow that
+# blocks vendor domains executing system_file binaries.  The actual exec
+# permission is granted explicitly below (system_file:file execute*).
+
+type vendor_create_vlan_cdcsdv, domain;
+type vendor_create_vlan_cdcsdv_exec, exec_type, file_type, vendor_file_type;
+
+# Required to bypass neverallow on vendor->system_file execution
+typeattribute vendor_create_vlan_cdcsdv vendor_executes_system_violators;
+
+init_daemon_domain(vendor_create_vlan_cdcsdv)
+
+# Entrypoint: exec the script itself
+allow vendor_create_vlan_cdcsdv vendor_create_vlan_cdcsdv_exec:file { read open execute entrypoint getattr map };
+
+# Execute #!/vendor/bin/sh shebang interpreter
+allow vendor_create_vlan_cdcsdv vendor_shell_exec:file { map read execute getattr open entrypoint };
+
+# Execute /system/bin/ip (system_file_type) -- allowed by vendor_executes_system_violators
+allow vendor_create_vlan_cdcsdv system_file:file { read open execute execute_no_trans getattr map };
+
+# Execute toolbox helpers (/system/bin/ip is toolbox on some builds)
+allow vendor_create_vlan_cdcsdv toolbox_exec:file { getattr execute read open execute_no_trans map };
+
+# Network interface management (VLAN creation via netlink)
+allow vendor_create_vlan_cdcsdv self:netlink_route_socket { bind write getattr create setopt read nlmsg_write nlmsg_readpriv };
+allow vendor_create_vlan_cdcsdv self:udp_socket { create ioctl };
+allowxperm vendor_create_vlan_cdcsdv self:udp_socket ioctl { SIOCGIFINDEX };
+allow vendor_create_vlan_cdcsdv self:capability { net_admin };
+allow vendor_create_vlan_cdcsdv proc_net:file { write open read getattr };
+
+# Write to kmsg for logging (stdio_to_kmsg in service definition)
+allow vendor_create_vlan_cdcsdv kmsg_device:chr_file { write open };
+allow vendor_create_vlan_cdcsdv kmsg_debug_device:chr_file { write open ioctl };
+allowxperm vendor_create_vlan_cdcsdv kmsg_debug_device:chr_file ioctl { 0x5401 };

@@ -1,0 +1,29 @@
+# sdv fstab
+
+# TODO (SSG team CR): Enable FBE (fileencryption=aes-256-xts:aes-256-cts:v2) and metadata
+# encryption (metadata_encryption=aes-256-xts) on userdata once QTI keymint is enabled.
+# CDC nonsecure keymint does not support inlinecrypt/wrappedkey — intentionally omitted below.
+
+#<src>                                                 <mnt_point>            <type>  <mnt_flags and options>                            <fs_mgr_flags>
+system                                                 /system                 ext4    ro,barrier=1,discard,errors=panic                    wait,logical,first_stage_mount,slotselect
+system_ext                                             /system_ext             ext4    ro,barrier=1,discard                                 wait,logical,first_stage_mount,slotselect
+vendor                                                 /vendor                 ext4    ro,barrier=1,discard,errors=panic                    wait,logical,first_stage_mount,slotselect
+system_dlkm                                            /system_dlkm            ext4    ro,barrier=1,discard                                 wait,logical,first_stage_mount,slotselect
+vendor_dlkm                                            /vendor_dlkm            ext4    ro,barrier=1,discard                                 wait,logical,first_stage_mount,slotselect
+/dev/block/by-name/metadata                            /metadata               f2fs    noatime,nosuid,nodev,discard                         wait,formattable,first_stage_mount,check
+/dev/block/by-name/userdata                            /data                   f2fs    rw,noatime,nosuid,nodev,fsync_mode=nobarrier,discard              latemount,wait,check,formattable,quota,reservedsize=128M,checkpoint=fs
+/dev/block/persist                                     /mnt/vendor/persist     ext4    rw,noatime                                           defaults
+/dev/block/by-name/misc                                /misc                   emmc    defaults                                             defaults
+/dev/block/modem                                       /vendor/firmware_mnt    vfat    ro,shortname=lower,uid=0,gid=1000,dmask=227,fmask=337,context=u:object_r:firmware_file:s0               defaults,slotselect
+
+#CDC specific ufs partitions mount rules
+/dev/block/factory                                /mnt/vendor/factory           ext4   rw,noatime,nosuid,nodev,discard               latemount,nofail,wait_timeout=1,check
+/dev/block/update                                 /mnt/update                   ext4   rw,noatime,nosuid,nodev,discard               latemount,nofail,wait_timeout=1,check
+/dev/block/persist-alliance_b                   /mnt/product/persist-alliance_b ext4   rw,noatime,nosuid,nodev,discard               latemount,nofail,wait_timeout=1,check
+/dev/block/oem_map                                /mnt/oem_map                  ext4   rw,noatime,nosuid,nodev,discard               latemount,nofail,wait_timeout=1,check
+/dev/block/rbvm_oem0                              /mnt/rbvm_oem0                ext4   rw,noatime,nosuid,nodev,discard               latemount,nofail,wait_timeout=1,check
+/dev/block/rbvm_oem1                              /mnt/rbvm_oem1                ext4   rw,noatime,nosuid,nodev,discard               latemount,nofail,wait_timeout=1,check
+/dev/block/confcal_0                              /mnt/confcal_0                vfat   rw,noatime,nosuid,nodev,discard               latemount,nofail,wait_timeout=1,check
+/dev/block/confcal_1                              /mnt/confcal_1                vfat   rw,noatime,nosuid,nodev,discard               latemount,nofail,wait_timeout=1,check
+/dev/block/persist-alliance_a                   /mnt/product/persist-alliance_a ext4   rw,noatime,nosuid,nodev,discard               latemount,nofail,wait_timeout=1,check
+/dev/block/oem_data                               /mnt/vendor/oem_data          ext4   rw,noatime,nosuid,nodev,discard               latemount,nofail,wait_timeout=1,check

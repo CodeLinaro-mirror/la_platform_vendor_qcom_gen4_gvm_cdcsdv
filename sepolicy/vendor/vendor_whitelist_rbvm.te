@@ -1,0 +1,41 @@
+# Copyright (c) Qualcomm Technologies, Inc. and/or its subsidiaries.
+# SPDX-License-Identifier: BSD-3-Clause-Clear
+
+# Vendor domain for RBVM whitelist creation script (/vendor/bin/create_whitelist_rbvm.sh).
+# Script lives in vendor/bin (RBVM-only, guarded by gen4_gvm_cdcsdv vendor).
+#
+# vendor_executes_system_violators: exempts this domain from the neverallow that
+# blocks vendor domains executing system_file binaries.  The actual exec
+# permission is granted explicitly below (system_file:file execute*).
+
+type vendor_whitelist_rbvm, domain;
+type vendor_whitelist_rbvm_exec, exec_type, file_type, vendor_file_type;
+
+# Required to bypass neverallow on vendor->system_file execution
+typeattribute vendor_whitelist_rbvm vendor_executes_system_violators;
+
+init_daemon_domain(vendor_whitelist_rbvm)
+
+# Entrypoint: exec the script itself
+allow vendor_whitelist_rbvm vendor_whitelist_rbvm_exec:file { read open execute entrypoint getattr map };
+
+# Execute #!/vendor/bin/sh shebang interpreter
+allow vendor_whitelist_rbvm vendor_shell_exec:file { map read execute getattr open entrypoint };
+
+# Execute /system/bin/iptables (system_file_type) -- allowed by vendor_executes_system_violators
+allow vendor_whitelist_rbvm system_file:file { read open execute execute_no_trans getattr map };
+
+# Execute toolbox helpers
+allow vendor_whitelist_rbvm toolbox_exec:file { getattr execute read open execute_no_trans map };
+
+# Network operations (iptables for whitelist rules)
+allow vendor_whitelist_rbvm self:capability { net_admin net_raw };
+allow vendor_whitelist_rbvm self:netlink_route_socket { bind write getattr create setopt read nlmsg_write nlmsg_readpriv };
+allow vendor_whitelist_rbvm self:netlink_netfilter_socket { create read write bind };
+allow vendor_whitelist_rbvm proc_net:file { read open getattr };
+
+# Read whitelist_rbvm.csv from /vendor/bin/
+allow vendor_whitelist_rbvm vendor_file_type:file { read open getattr };
+
+# Write to kmsg for logging
+allow vendor_whitelist_rbvm kmsg_device:chr_file { open write };
