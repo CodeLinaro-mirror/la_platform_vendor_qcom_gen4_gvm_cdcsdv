@@ -1,0 +1,236 @@
+# Copyright (c) Qualcomm Technologies, Inc. and/or its subsidiaries.
+# SPDX-License-Identifier: BSD-3-Clause-Clear
+
+
+import /system_ext/etc/init/init_open_dice_service.rc
+import /system/etc/init/init.sdv_core_base.rc
+import /vendor/etc/init/android.hardware.boot-service.qti.rc
+import /system/etc/init/gsid.rc
+import /system/etc/init/vvmtruststore.rc
+import /system_ext/etc/init/automs_vlan.rc
+import /vendor/etc/init/vlan_cdcsdv.rc
+import /vendor/etc/init/android.sdv.hardware.security.keymint-service.nonsecure.rc
+# TODO (SSG team CR): Replace above with QTI keymint service once SSG enables FBE + metadata encryption:
+# import /vendor/etc/init/android.hardware.security.keymint-service.qti.rc
+import /vendor/etc/init/vhal-qti-service.rc
+import /vendor/etc/init/vendor-qti-sdv-carpower.rc
+import /vendor/etc/init/sdv-car-power.rc
+import /system/etc/init/android.system.suspend-service.rc
+import /vendor/etc/init/dumpstate-default.rc
+import /vendor/etc/init/car_power.rc
+import /vendor/etc/init/utc_daemon.rc
+
+#VNW
+on boot
+    write /dev/timeinfo 0
+    write /dev/utcshm 0
+    chmod 0660 /dev/timeinfo
+    chmod 0660 /dev/gptp_shm
+    chmod 0660 /dev/ptp0
+    chmod 0660 /dev/utcshm
+    chown system vendor_ptp /dev/timeinfo
+    chown system vendor_ptp /dev/utcshm
+    chown root vendor_ptp /dev/gptp_shm
+    chown root vendor_ptp /dev/ptp0
+
+on early-init
+    write /dev/kmsg "boot_kpi: M - INITRC Userspace Start  ${ro.boottime.init}"
+    write /sys/kernel/boot_kpi/kpi_values "boot_kpi: M - INITRC Userspace Start  ${ro.boottime.init}"
+    setprop service.adb.tcp.port 5555
+    setprop service.adb.listen_addrs tcp:5555
+    start adbd
+    mkdir /dev/socket/agm 0660 system system
+    restorecon /metadata
+
+on early-fs
+    exec_background u:r:vendor_modprobe:s0 -- /vendor/bin/modprobe -d /vendor_dlkm/lib/modules/ stub_dlkm machine_dlkm spf_machine_dlkm msm_hyp msm_geni_serial virtio_input open-dice
+    # load kernel modules
+    write /dev/kmsg "M - INITRC gki.modprobe"
+    write /sys/kernel/boot_kpi/kpi_values "M - INITRC gki.modprobe start"
+    exec_start gki.modprobe
+
+on fs
+    exec_background u:r:vendor_modprobe:s0 -- /vendor/bin/modprobe -d /vendor_dlkm/lib/modules/ boot_marker smcinvoke_dlkm tz_log_dlkm qseecom_dlkm qcrypto-msm_dlkm socinfo_dt eavb_fe ptp_virtual qcom_soc_wdt msm_vm_poweroff qcom_va_minidump qcom_hgsl
+
+# Updating the symlinks for the new CDC-partitions
+on early-fs && property:ro.product.name=gen4_gvm_cdcsdv
+    symlink /dev/block/misc                 /dev/block/by-name/misc
+    symlink /dev/block/vbmeta_a             /dev/block/by-name/vbmeta_a
+    symlink /dev/block/vbmeta_b             /dev/block/by-name/vbmeta_b
+    symlink /dev/block/confraw              /dev/block/by-name/confraw
+    symlink /dev/block/asset_0              /dev/block/by-name/asset_0
+    symlink /dev/block/asset_1              /dev/block/by-name/asset_1
+    symlink /dev/block/vvmtruststore        /dev/block/by-name/vvmtruststore
+    symlink /dev/block/update               /dev/block/by-name/update
+    symlink /dev/block/persist-alliance_b   /dev/block/by-name/persist-alliance_b
+    symlink /dev/block/oem_a                /dev/block/by-name/oem_a
+    symlink /dev/block/oem_b                /dev/block/by-name/oem_b
+    symlink /dev/block/oem_map              /dev/block/by-name/oem_map
+    symlink /dev/block/rbvm_oem0            /dev/block/by-name/rbvm_oem0
+    symlink /dev/block/rbvm_oem1            /dev/block/by-name/rbvm_oem1
+    symlink /dev/block/oemfactorystate      /dev/block/by-name/oemfactorystate
+    symlink /dev/block/factory              /dev/block/by-name/factory
+    symlink /dev/block/oem_data             /dev/block/by-name/oem_data
+    symlink /dev/block/confcal_0            /dev/block/by-name/confcal_0
+    symlink /dev/block/confcal_1            /dev/block/by-name/confcal_1
+    symlink /dev/block/persist-alliance_a   /dev/block/by-name/persist-alliance_a
+
+service gki.modprobe /vendor/bin/system_dlkm_modprobe.sh
+    class main
+    user root
+    group root system
+    disabled
+    stdio_to_kmsg
+    seclabel u:r:vendor_modprobe:s0
+    oneshot
+
+service vendor.modprobe /vendor/bin/vendor_modprobe.sh
+    class main
+    user root
+    group root system
+    oneshot
+    disabled
+    stdio_to_kmsg
+    seclabel u:r:vendor_modprobe:s0
+    import service_dlkm
+    on service_dlkm_started
+
+service vendor.agm-1-0 /vendor/bin/hw/agmipcservice
+    class core
+    user system
+    interface aidl vendor.qti.hardware.agm.IAGM/default
+    # media gid needed for /dev/fm (radio) and for /data/misc/media (tee)
+    group system audio media mediadrm oem_2901 wakelock
+    capabilities BLOCK_SUSPEND SYS_NICE
+    disabled
+
+service console_qc /system/bin/sh
+    class core
+    console
+    disabled
+    user shell
+    group shell log readproc
+    seclabel u:r:shell:s0
+    setenv HOSTNAME console
+
+# Disable the dt_agent from Google
+service dt_agent /system/bin/true
+    class core
+    oneshot
+    override
+    disabled
+    user system
+    group system
+
+# Declare and start the SDV Data Tunnel agent with an increased file descriptor limit
+service dt_agent_cdc /system_ext/bin/dt_agent
+    class core
+    disabled
+    user system_ext_sdv_dt
+    group system
+    rlimit nofile 32768 32768
+    oneshot
+
+# Start the SDV Data Tunnel agent
+on property:dev.bootcomplete=1
+    start dt_agent_cdc
+
+on property:dev.bootcomplete=1
+    start carpowerusbservice
+
+on init
+    write /dev/kmsg "boot_kpi: M - INITRC on init trigger"
+    write /sys/kernel/boot_kpi/kpi_values "boot_kpi: M - INITRC on init trigger"
+    start console_qc
+    write /dev/kmsg "M - audio starting agm service"
+    start vendor.agm-1-0
+    start harpaltest
+
+on early-fs
+    chown system system /dev/kmsg
+    chmod 0644 /dev/kmsg
+
+
+on property:dev.bootcomplete=1
+    write /dev/kmsg "boot_kpi: M - INITRC on boot complete trigger"
+    write /sys/kernel/boot_kpi/kpi_values "boot_kpi: M - INITRC on boot complete trigger"
+    mkdir /data/vendor/cib 0770 system system
+    chown system system /data/vendor/cib
+    chmod 0770 /data/vendor/cib
+    write /dev/kmsg "boot_kpi: M - INITRC on Camera Frame Dump App trigger"
+    write /sys/kernel/boot_kpi/kpi_values "boot_kpi: M - Camera Test App Starting"
+    enable cam_test
+    write /dev/kmsg "M -  Camera Frame Dump App started"
+    start cam_test
+    start sdv_someip_broker_agent
+
+
+# Declare and start the SDV SOME/IP stack agent.
+service sdv_someip_stack_agent /vendor/bin/qc_sdv_someip_stack_agent
+    class core
+    disabled
+    user system
+    group system
+    setenv VSOMEIP_CONFIGURATION_vsomeip_vlan1500 /vendor/etc/someip/vsomeip_vlan1500.json
+    setenv VSOMEIP_CONFIGURATION_vsomeip_vlan1510 /vendor/etc/someip/vsomeip_vlan1510.json
+
+on property:dev.bootcomplete=1
+    write /dev/kmsg "boot_kpi: M - INITRC on SOME/IP Stack Agent trigger"
+    write /sys/kernel/boot_kpi/kpi_values "boot_kpi: M - INITRC on SOME/IP Stack Agent trigger"
+    mkdir /data/vendor/someip 0770 system system
+    mkdir /dev/someip 0770 system system
+    start sdv_someip_stack_agent
+
+on late-init && property:ro.build.type=userdebug
+    # Create tmpfs for use by the shell user.
+    mount tmpfs tmpfs /tmp nosuid nodev rw
+    restorecon /tmp
+    chown shell shell /tmp
+    chmod 0771 /tmp
+
+# Start Qseecom service and daemon
+on property:dev.bootcomplete=1
+    wait /dev/qseecom
+    chown system drmrpc /dev/qseecom
+    chmod 660 /dev/qseecom
+    # Create directories for FS/SFS listener
+    mkdir /data/vendor/tzstorage 0770 system system
+    mkdir /mnt/vendor/persist/data 0700 system system
+    start vendor.qseecomd
+    start qseecom-service
+
+ #harpaltest
+ service harpaltest /vendor/bin/HarPalTest /vendor/etc/bike_bell.wav -usecase k
+    class core
+    user system
+    group system wakelock
+    capabilities BLOCK_SUSPEND
+    oneshot
+    disabled
+
+# Qseecom-service
+service qseecom-service /vendor/bin/hw/vendor.qti.hardware.qseecom@1.0-service
+    class hal
+    user system
+    group system drmrpc
+    interface aidl vendor.qti.hardware.qseecom
+    disabled
+
+# Qseecom daemon
+service vendor.qseecomd /vendor/bin/qseecomd
+    socket notify-topology stream 660 system drmrpc
+    class core
+    user root
+    group root drmrpc
+    disabled
+
+
+#camTest
+service cam_test vendor/bin/test_app_cib
+     seclabel u:r:cam_test:s0
+     class core
+     user system
+     group system wakelock camera
+     capabilities BLOCK_SUSPEND SYS_NICE
+     oneshot
+     disabled

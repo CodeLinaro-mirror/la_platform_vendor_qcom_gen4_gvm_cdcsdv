@@ -1,0 +1,47 @@
+# Copyright (c) Qualcomm Technologies, Inc. and/or its subsidiaries.
+# SPDX-License-Identifier: BSD-3-Clause-Clear
+#
+# VLAN and whitelist initialization for gen4_gvm_cdcsdv.
+# This RC is vendor-side only -- no QSSI/system_ext changes needed.
+# Scripts live in /vendor/bin/ and run under vendor SELinux domains.
+#
+# Trigger notes:
+#   "on fs" -- matches the timing used by automs_vlan.rc in V15 (fires after
+#              partitions are mounted, /vendor is accessible).  No compound
+#              ro.product.name guard needed because this RC is only installed
+#              for gen4_gvm_cdcsdv via PRODUCT_COPY_FILES.
+#   "on property:sys.boot_completed=1" -- whitelist runs after full boot so
+#              iptables is ready; matches automs_vlan.rc whitelist trigger.
+
+on fs
+    write /dev/kmsg "Specific lunch combo: Start create-vlan for cdcsdv (vendor)"
+    write /dev/kmsg "boot_kpi: M - INITRC IP Configuration Start"
+    write /sys/kernel/boot_kpi/kpi_values "boot_kpi: M - INITRC IP and VLAN Configuration Start"
+    exec_start vendor-create-vlan-cdcsdv
+    write /dev/kmsg "boot_kpi: M - INITRC VLAN Interface Setup End"
+    write /sys/kernel/boot_kpi/kpi_values "boot_kpi: M - INITRC VLAN Interface Setup End"
+    setprop vendor.ethernet.ready 1
+    setprop service.sc.create.vlan 1
+    write /proc/sys/net/ipv4/ip_local_port_range "49152 65535"
+
+on property:sys.boot_completed=1
+    write /dev/kmsg "Specific lunch combo: create_whitelist_rbvm for cdcsdv (vendor)"
+    wait /proc/net/ip_tables_names 20
+    exec_start vendor-create-whitelist-rbvm
+
+service vendor-create-vlan-cdcsdv /vendor/bin/create_vlan_vm_1.sh
+    user system
+    group system shell inet net_admin
+    capabilities NET_ADMIN
+    stdio_to_kmsg
+    disabled
+    oneshot
+    seclabel u:r:vendor_create_vlan_cdcsdv:s0
+
+service vendor-create-whitelist-rbvm /vendor/bin/create_whitelist_rbvm.sh
+    user root
+    group root shell inet net_admin
+    capabilities NET_ADMIN NET_RAW
+    stdio_to_kmsg
+    oneshot
+    seclabel u:r:vendor_whitelist_rbvm:s0

@@ -1,0 +1,6 @@
+# Copyright (c) Qualcomm Technologies, Inc. and/or its subsidiaries.
+# SPDX-License-Identifier: BSD-3-Clause-Clear
+
+/vendor/bin/create_vlan_vm_1\.sh          u:object_r:vendor_create_vlan_cdcsdv_exec:s0
+/vendor/bin/create_whitelist_rbvm\.sh     u:object_r:vendor_whitelist_rbvm_exec:s0
+/vendor/bin/whitelist_rbvm\.csv           u:object_r:vendor_configs_file:s0
