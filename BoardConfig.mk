@@ -48,3 +48,5 @@ TARGET_FS_CONFIG_GEN  += device/qcom/gen4_gvm_cdcsdv/config.fs
 TARGET_RECOVERY_FSTAB := device/qcom/gen4_gvm_cdcsdv/gen4_fstab_metadata_f2fs/fstab.gen4.qti
 
 BOARD_VENDOR_SEPOLICY_DIRS += device/qcom/gen4_gvm_cdcsdv/sepolicy/vendor
+# Set a target-specific soong config variable so that the QC someip stack agent
+$(call soong_config_set,qti,qti_android_version_above_16_cdcsdv,true)

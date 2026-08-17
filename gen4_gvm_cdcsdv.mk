@@ -36,7 +36,9 @@ TARGET_ENABLE_C11_COMPATIBLE := true
 #TARGET_USES_QMAA_OVERRIDE_FASTCV := false
 
 PRODUCT_PACKAGES += qc_sdv_someip_stack_agent \
-                    someip_stack_agent_testapp
+                    someip_stack_agent_testapp \
+                    qc_sdv_someip_framework_compatibility_matrix.xml
+
 PRODUCT_PACKAGES += vsomeip_vlan1500.json \
                     vsomeip_vlan1510.json
 
