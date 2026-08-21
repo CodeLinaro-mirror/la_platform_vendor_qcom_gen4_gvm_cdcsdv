@@ -4,6 +4,7 @@
 
 import /system_ext/etc/init/init_open_dice_service.rc
 import /system/etc/init/init.sdv_core_base.rc
+import /product/etc/init/hw/ethernet.sdv_arm64.rc
 import /vendor/etc/init/android.hardware.boot-service.qti.rc
 import /system/etc/init/gsid.rc
 import /system/etc/init/vvmtruststore.rc
@@ -19,6 +20,18 @@ import /system/etc/init/android.system.suspend-service.rc
 import /vendor/etc/init/dumpstate-default.rc
 import /vendor/etc/init/car_power.rc
 import /vendor/etc/init/utc_daemon.rc
+
+# Declare and start the SDV SOME/IP broker agent.
+# Inlined from device/google/sdv/sdv_core_arm64/init.sdv_core_arm64.rc.
+service sdv_someip_broker_agent /system_ext/bin/sdv_someip_broker_agent_comms
+    class core
+    disabled
+    user system_ext_sdv_someip
+    group system
+    oneshot
+
+on property:ro.sdv.orchestrator.state.ready=true && property:ro.boot.sdv.someip.enable=true
+    start sdv_someip_broker_agent
 
 #VNW
 on boot
@@ -126,7 +139,7 @@ service dt_agent /system/bin/true
 service dt_agent_cdc /system_ext/bin/dt_agent
     class core
     disabled
-    user system_ext_sdv_dt
+    user sdv_dt_agent
     group system
     rlimit nofile 32768 32768
     oneshot
